@@ -21,6 +21,7 @@ import {
 import { defaultCharacter } from "./defaultCharacter.ts";
 
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
+import { tippingPlugin } from "@elizaos/plugin-tipping";
 
 import fs from "fs";
 import net from "net";
@@ -611,6 +612,7 @@ export async function createAgent(
         // character.plugins are handled when clients are added
         plugins: [
             bootstrapPlugin,
+            tippingPlugin,
         ]
             .flat()
             .filter(Boolean),
