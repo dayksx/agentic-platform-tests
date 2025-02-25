@@ -13,48 +13,49 @@ import {
     generateText,
 } from "@elizaos/core";
 
-const tipTemplate = `Respond with a JSON markdown block containing only the extracted values. Use the special null value for any values that cannot be determined.
+const tipTemplate = `Respond with a JSON markdown block containing only the extracted values. Use the \`null\` special value (without quotes) for any values that cannot be determined.
 
 Example response:
 \`\`\`json
 {
     "evm_address": "0xRecipientEVMAddressHere",
-    "recipient_name": null,
+    "recipient_name": @,
     "amount": "AmountHere",
-    "currency": "CurrencyHere",
+    "currency": "$CurrencyHere",
     "reason": "ReasonForTippingHere"
 }
 \`\`\`
 
+Given the last message of {{senderName}} use the relevent recent messages to gather the tipping information in the JSON data structure.
 {{recentMessages}}
 
-Given the recent messages, extract the following information about the requested tip:
+Given the recent messages from {{senderName}} who expresses the intention to tip a specific @recipient, extract the following information shared by {{senderName}} about the requested tip:
 - Recipient EVM address
-- Recipient name (if available)
+- Recipient name (optional)
 - Amount to tip
 - Currency
-- Reason for tipping
+- Reason for tipping (optional)
+
+Ensure that the JSON payload is specific to the tipping intent identified by the recipient's identifier, which could be the @name or the Ethereum address.
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
 
-export const missingElementTemplate = `# Messages we are summarizing
+export const missingElementTemplate = `# Messages from which we are extracting the tipping information for a given @recipient
 {{recentMessages}}
 
-# Instructions: {{senderName}} is requesting to tip someone. Your goal is to determine the missing information required to complete the tipping process.
-Identify any missing information that is required to complete the tip. This can include recipient EVM address, recipient name, amount, currency, and reason.
+# Instructions: {{senderName}} is requesting to tip a specific @recipient. Your goal is to determine the missing information required to complete the tipping process.
+Identify any missing information that is required to complete the tip. This includes the recipient's EVM address, recipient's name, amount, currency, and reason.
 
+Based on the recent messages, extract the following information about the requested tip:
+- Recipient's EVM address (mandatory)
+- Recipient's name (optional)
+- Amount to tip (mandatory)
+- Currency (mandatory)
+- Reason for tipping (optional)
 
-{{recentMessages}}
+If any mandatory information is missing, ask the user for the specific missing information to fulfill the request in the {{agentName}} style. If any optional information is missing, ask the user if they could provide it to offer more context, also in the {{agentName}} style. Do not acknowledge this request; just ask for the missing information directly. Only respond with the text asking for the missing information in the {{agentName}} personality.`;
 
-Given the recent messages, extract the following information about the requested tip:
-- Recipient EVM address
-- Recipient name (if available)
-- Amount to tip
-- Currency
-- Reason for tipping
-
-If any of those information is missing, ask the user for the specific missing information with the {{agentName}} style of answering. Do not acknowledge this request, just ask for the missing information directly. Only respond with the text asking for the missing information with the {{agentName}} personality.`;
 export const tipAction: Action = {
     name: "TIP",
     similes: [
@@ -67,6 +68,9 @@ export const tipAction: Action = {
 
     validate: async (_runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.info(`Tipping validation`);
+
+
+        // placeholder: check if the given user is allowed to tip
         return true;
     },
     handler: async (
@@ -84,44 +88,44 @@ export const tipAction: Action = {
             state = await runtime.updateRecentMessageState(state);
         }
 
-        // Tipping Element retrieving
+        // Extract and store tipping information
         const tipContext = composeContext({
             state,
             template: tipTemplate,
         });
-
-        const tipElements = await generateObjectDeprecated({
+        const tipInformation = await generateObjectDeprecated({
             runtime,
             context: tipContext,
             modelClass: ModelClass.SMALL,
         });
-
-        // Missing Elements answering
-        const missingElementContext = composeContext({
+        console.log('Tipping information: ', tipInformation);
+        
+        // Ask for missing tipping information
+        const tipMissingInfoContext = composeContext({
             state,
             template: missingElementTemplate,
         });
-
-        const missingElementAsking = await generateText({
+        const tipMissingInfoAsking = await generateText({
             runtime,
-            context: missingElementContext,
+            context: tipMissingInfoContext,
             modelClass: ModelClass.SMALL,
         });
-        console.log('Tipping information: ', tipElements);
+        console.log('Message asking missing tipping information: ', tipMissingInfoAsking);
+        
 
         if (callback) {
-            if (tipElements.evm_address != 'null' && tipElements.amount != 'null' && tipElements.currency != 'null' && tipElements.reason != 'null') {
+            if (tipInformation.evm_address != 'null' && tipInformation.amount != 'null' && tipInformation.currency != 'null' && tipInformation.reason != 'null') {
                 callback({
                     text: `DONE!`,
-                    tipElements: {
+                    tipInformation: {
                         tip: {
-                            tipElements
+                            tipInformation
                         },
                     },
                 });
             } else {
                 callback({
-                    text: missingElementAsking,
+                    text: tipMissingInfoAsking,
                     content: {
                         error: true
                     },
@@ -134,43 +138,51 @@ export const tipAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "Hey Agent, please tip 100 $ETH to @agent2 for its awesome work!" },
+                content: { text: "Hey {{agentName}}, please tip $ETH to @vitalik for creating Ethereum and bringing it there!" },
+            },
+            {
+                user: "{{user1}}",
+                content: { text: "A total of 10000 $ETH!" },
+            },
+            {
+                user: "{{user1}}",
+                content: { text: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045" },
             },
             {
                 user: "{{user2}}",
-                content: { text: "Tipping @agent2 100 ETH for: its awesome work!", action: "TIP" },
-            },
-            {
-                user: "{{user3}}",
-                content: { text: "0x1234567890abcdef1234567890abcdef12345678", action: "EVM_ADDRESS" },
+                content: { text: "Copy that! Let's do that", action: "TIP" },
             }
         ],
         [
             {
                 user: "{{user1}}",
-                content: { text: "Hey Agent, please tip 50 $DAI to @jane for her great presentation!" },
+                content: { text: "Tipping 50 $DAI to @jane for her great presentation!" },
+            },
+            {
+                user: "{{user1}}",
+                content: { text: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef" },
             },
             {
                 user: "{{user2}}",
-                content: { text: "Tipping @jane 50 DAI for: her great presentation!", action: "TIP" },
-            },
-            {
-                user: "{{user3}}",
-                content: { text: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef", action: "EVM_ADDRESS" },
+                content: { text: "Tip sent!", action: "TIP" },
             }
         ],
         [
             {
                 user: "{{user1}}",
-                content: { text: "Hey Agent, please tip 200 $USDC to @bob for his help with the project!" },
+                content: { text: "Please tip 200 to @bob for his help with the project!" },
+            },
+            {
+                user: "{{user1}}",
+                content: { text: "with $USDC!" },
+            },
+            {
+                user: "{{user1}}",
+                content: { text: "@bob address is 0x9876543210fedcba9876543210fedcba98765432" },
             },
             {
                 user: "{{user2}}",
-                content: { text: "Tipping @bob 200 USDC for: his help with the project!", action: "TIP" },
-            },
-            {
-                user: "{{user3}}",
-                content: { text: "0x9876543210fedcba9876543210fedcba98765432", action: "EVM_ADDRESS" },
+                content: { text: "Done @bob received your tip! ", action: "TIP" },
             }
         ]
     ] as ActionExample[][],

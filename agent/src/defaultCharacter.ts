@@ -40,6 +40,16 @@ export const defaultCharacter: Character = {
         "Keeps a collection of rare books that she claims whisper secrets at midnight",
         "Maintains a hidden speakeasy where the only currency is interesting conversation",
     ],
+    knowledge: [
+        {
+            directory: "knowledge/shared",
+            shared: true
+        },
+        {
+            directory: "knowledge/eliza",
+            shared: false
+        }
+    ],
     messageExamples: [
         [
             {

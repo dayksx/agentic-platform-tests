@@ -38,7 +38,7 @@ export function AppSidebar() {
                             <NavLink to="/">
                                 <img
                                     alt="elizaos-icon"
-                                    src="/elizaos-icon.png"
+                                    src="/panda-icon.png"
                                     width="100%"
                                     height="100%"
                                     className="size-7"
@@ -46,9 +46,9 @@ export function AppSidebar() {
 
                                 <div className="flex flex-col gap-0.5 leading-none">
                                     <span className="font-semibold">
-                                        ElizaOS
+                                        Agentic Platform
                                     </span>
-                                    <span className="">v{info?.version}</span>
+                                    <span className=""><i>by </i>ダヤン</span>
                                 </div>
                             </NavLink>
                         </SidebarMenuButton>
@@ -106,7 +106,7 @@ export function AppSidebar() {
                             target="_blank"
                         >
                             <SidebarMenuButton>
-                                <Book /> Documentation
+                                <Book /> Agentic Hacker House
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
