@@ -581,7 +581,8 @@ export async function initializeClients(
     const clients: ClientInstance[] = [];
     // const clientTypes = clients.map((c) => c.name);
     // elizaLogger.log("initializeClients", clientTypes, "for", character.name);
-
+    console.log("> total plugins: ", character.plugins?.length);
+    console.log("> plugins: ", character.plugins);
     if (character.plugins?.length > 0) {
         for (const plugin of character.plugins) {
             if (plugin.clients) {

@@ -18,10 +18,12 @@
         "exec": "node --enable-source-maps --loader ts-node/esm src/index.ts"
     },
     "dependencies": {
+        "@elizaos-plugins/client-slack": "workspace:0.25.6-alpha.1",
+        "@elizaos-plugins/client-telegram": "workspace:0.25.6-alpha.1",
         "@elizaos/client-direct": "workspace:*",
+        "@elizaos/core": "workspace:*",
         "@elizaos/plugin-bootstrap": "workspace:*",
         "@elizaos/plugin-tipping": "workspace:*",
-        "@elizaos/core": "workspace:*",
         "readline": "1.3.0",
         "ws": "8.18.0",
         "yargs": "17.7.2"

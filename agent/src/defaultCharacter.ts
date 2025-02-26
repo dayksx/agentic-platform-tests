@@ -3,7 +3,7 @@ import { Character, ModelProviderName } from "@elizaos/core";
 export const defaultCharacter: Character = {
     name: "Eliza",
     username: "eliza",
-    plugins: [],
+    plugins: ["slack", "telegram"],
     modelProvider: ModelProviderName.OPENAI,
     settings: {
         secrets: {},

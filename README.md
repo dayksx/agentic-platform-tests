@@ -259,3 +259,35 @@ We welcome contributions! Here's how you can help:
 - Add comments for complex logic
 - Update documentation for changes
 - Add tests for new features
+
+### Slack configuration
+
+Create global environment variable for LubAIn and Vitalik
+
+# Slack Configuration
+```
+CHARACTER.VITALIK.SLACK_APP_ID=           # From Basic Information > App Credentials > App ID
+CHARACTER.VITALIK.SLACK_CLIENT_ID=        # From Basic Information > App Credentials > Client ID
+CHARACTER.VITALIK.SLACK_CLIENT_SECRET=    # From Basic Information > App Credentials > Client Secret
+CHARACTER.VITALIK.SLACK_SIGNING_SECRET=   # From Basic Information > App Credentials > Signing Secret
+CHARACTER.VITALIK.SLACK_BOT_TOKEN=       # From OAuth & Permissions > Bot User OAuth Token (starts with xoxb-)
+CHARACTER.VITALIK.SLACK_VERIFICATION_TOKEN= # From Basic Information > App Credentials > Verification Token
+CHARACTER.VITALIK.SLACK_SERVER_PORT=  # Must match the port you used with ngrok
+```
+Create a tunel with Ngrok
+```
+version: 2
+authtoken: xxx
+tunnels:
+  http-tunnel:
+    proto: http
+    addr: 3069
+  tcp-tunnel:
+    proto: http
+    addr: 3070
+```
+
+Execute the API Gateway
+```
+ngrok start --all
+```
