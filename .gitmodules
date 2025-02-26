@@ -1,3 +1,6 @@
 [submodule "characters"]
 	path = characters
 	url = https://github.com/elizaos/characters
+[submodule "packages/client-slack"]
+	path = packages/client-slack
+	url = https://github.com/elizaos-plugins/client-slack
