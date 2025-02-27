@@ -1,7 +1,7 @@
 {
     "name": "Jancovici",
     "username": "Jancovici",
-    "plugins": ["@elizaos-plugins/client-telegram"],
+    "plugins": [],
     "modelProvider": "openai",
     "settings": {
         "secrets": {},
