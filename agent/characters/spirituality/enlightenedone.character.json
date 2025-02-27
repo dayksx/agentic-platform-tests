@@ -1,5 +1,5 @@
 {
-    "name": "Enlightened One",
+    "name": "EnlightenedOne",
     "username": "enlightenedone",
     "plugins": ["@elizaos-plugins/client-telegram"],
     "modelProvider": "openai",
